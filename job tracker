@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Application Tracker</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .tracker-container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    input, select, button {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    .delete-btn {
+      background: #dc3545;
+    }
+    .delete-btn:hover {
+      background: #a71d2a;
+    }
+  </style>
+</head>
+<body>
+  <h1>Job Application Tracker</h1>
+  <div class="tracker-container">
+    <form id="jobForm">
+      <input type="text" id="company" placeholder="Company Name" required>
+      <input type="text" id="role" placeholder="Job Title" required>
+      <input type="date" id="dateApplied" required>
+      <select id="status">
+        <option value="Applied">Applied</option>
+        <option value="Interview">Interview</option>
+        <option value="Offer">Offer</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+      <button type="submit">Add Job</button>
+    </form>
+
+    <table id="jobTable">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Role</th>
+          <th>Date Applied</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const jobForm = document.getElementById('jobForm');
+    const jobTable = document.getElementById('jobTable').getElementsByTagName('tbody')[0];
+
+    let jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+
+    function renderTable() {
+      jobTable.innerHTML = '';
+      jobs.forEach((job, index) => {
+        const row = jobTable.insertRow();
+        row.innerHTML = `
+          <td>${job.company}</td>
+          <td>${job.role}</td>
+          <td>${job.dateApplied}</td>
+          <td>${job.status}</td>
+          <td><button class="delete-btn" onclick="deleteJob(${index})">Delete</button></td>
+        `;
+      });
+    }
+
+    jobForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const company = document.getElementById('company').value;
+      const role = document.getElementById('role').value;
+      const dateApplied = document.getElementById('dateApplied').value;
+      const status = document.getElementById('status').value;
+
+      jobs.push({ company, role, dateApplied, status });
+      localStorage.setItem('jobs', JSON.stringify(jobs));
+      jobForm.reset();
+      renderTable();
+    });
+
+    function deleteJob(index) {
+      jobs.splice(index, 1);
+      localStorage.setItem('jobs', JSON.stringify(jobs));
+      renderTable();
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
