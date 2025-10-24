@@ -1,0 +1,41 @@
+const express = require('express');
+const path = require('path');
+const app = express();
+const port = 3000;
+
+// Middleware
+app.use(express.json());
+app.use(express.static('public')); // serve static HTML files
+
+let applications = [];
+let nextId = 1;
+
+// Test route
+app.get('/test', (req, res) => {
+  res.send('Server is working!');
+});
+
+// Get all applications
+app.get('/applications', (req, res) => {
+  res.json(applications);
+});
+
+// Add a new application
+app.post('/applications', (req, res) => {
+  const { company, title, status } = req.body;
+  if (!company || !title || !status) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+  const newApp = { id: nextId++, company, title, status };
+  applications.push(newApp);
+  res.json(newApp);
+});
+
+// Home route
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
