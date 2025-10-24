@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Job Application Tracker</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .tracker-container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    input, select, button {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    .delete-btn {
+      background: #dc3545;
+    }
+    .delete-btn:hover {
+      background: #a71d2a;
+    }
+  </style>
+
+</head>
+<body>
+  <h1>Job Application Tracker</h1>
+
+  <h3>Add Application</h3>
+  <form id="appForm">
+    <input type="text" id="company" placeholder="Company Name" required />
+    <input type="text" id="title" placeholder="Job Title" required />
+    <select id="status" required>
+      <option value="">Select Status</option>
+      <option value="Applied">Applied</option>
+      <option value="Interview">Interview</option>
+      <option value="Offered">Offered</option>
+      <option value="Rejected">Rejected</option>
+    </select>
+    <button type="submit">Add Application</button>
+  </form>
+
+  <h3>Applications</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Company</th>
+        <th>Title</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="appTableBody">
+      <!-- Applications will appear here -->
+    </tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('appForm');
+    const tableBody = document.getElementById('appTableBody');
+
+    // Function to fetch and display applications
+    async function loadApplications() {
+      const res = await fetch('/applications');
+      const apps = await res.json();
+      tableBody.innerHTML = '';
+      apps.forEach(app => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${app.id}</td>
+          <td>${app.company}</td>
+          <td>${app.title}</td>
+          <td>${app.status}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Initial load
+    loadApplications();
+
+    // Add new application
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const company = document.getElementById('company').value;
+      const title = document.getElementById('title').value;
+      const status = document.getElementById('status').value;
+
+      if (!company || !title || !status) return alert('All fields are required');
+
+      await fetch('/applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ company, title, status })
+      });
+
+      form.reset();
+      loadApplications();
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
